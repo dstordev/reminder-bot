@@ -4,7 +4,9 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "npx tsc",
+    "start": "node ./dist/run.js",
+    "build_and_start": "npx tsc && node ./dist/run.js"
   },
   "dependencies": {
     "@grammyjs/conversations": "^2.0.1",
