@@ -1,24 +1,22 @@
 import {Bot, session} from "grammy";
-import {MyContext} from "./types";
-import {ConversationFlavor, conversations, createConversation} from "@grammyjs/conversations";
+import {MyContext, SessionData, states} from "./types";
 import {ReminderBotDatabase} from "../database/reminder_bot_database";
-import {reminderAddConversation} from "./add_reminder_conversation/conversation";
-import {updateTimezoneConversation} from "./update_timezone_conversation";
 import {addReminderHandler, remindersHandler, settingsHandler, settingsTimezone, startHandler} from "./handlers";
 import moment from "moment";
 import {ConfigModel} from "../config_dotenv";
 import {scheduleAddJobReminder} from "./schedule_reminders";
 import {scheduleJobs} from "../schedule_funcs";
-
+import {updateTimezoneRouter} from "./conversations/update_timezone_conversation";
+import {addReminderRouter} from "./conversations/add_reminder_conversation";
 
 export class TelegramBot {
-    private readonly bot: Bot<ConversationFlavor<MyContext>>;
+    private readonly bot: Bot<MyContext>;
     private readonly myCommands: { command: string, description: string }[];
     private readonly reminderBotDatabase: ReminderBotDatabase;
     private readonly configData: ConfigModel;
 
     constructor(bot_token: string, reminderBotDatabase: ReminderBotDatabase, configData: ConfigModel) {
-        this.bot = new Bot<ConversationFlavor<MyContext>>(bot_token);
+        this.bot = new Bot<MyContext>(bot_token);
         this.myCommands = [
             {command: "start", description: "🔄 Обновить бот"},
             {command: "add_reminder", description: "➕ Добавить напоминание"},
@@ -28,8 +26,14 @@ export class TelegramBot {
     }
 
     private register_middlewares() {
-        this.bot.use(conversations());
-        this.bot.use(session({initial: () => ({bot: this.bot, reminderBotDatabase: this.reminderBotDatabase})}));
+        this.bot.use(session({
+            initial: (): SessionData => ({
+                bot: this.bot,
+                reminderBotDatabase: this.reminderBotDatabase,
+                state: states.idle,
+                stateData: {}
+            })
+        }));
         this.bot.use(async (ctx, next) => {
             if (!ctx.from)
                 return await next();
@@ -48,38 +52,47 @@ export class TelegramBot {
             }
             await next();
         });
-        this.bot.use(createConversation(reminderAddConversation));
-        this.bot.use(createConversation(updateTimezoneConversation));
     }
 
-    private register_handlers() {
+    private register_routers() {
+        this.bot.use(updateTimezoneRouter);
+        this.bot.use(addReminderRouter);
+    }
+
+    private register_handlers_and_conversations() {
         this.bot.command("start", startHandler);
-        this.bot.callbackQuery("start", startHandler)
+        this.bot.callbackQuery("start", startHandler);
 
-        this.bot.command("add_reminder", addReminderHandler)
-        this.bot.callbackQuery("add_reminder", addReminderHandler)
+        this.bot.callbackQuery("settings", settingsHandler);
 
-        this.bot.callbackQuery("settings", settingsHandler)
+        this.bot.callbackQuery("reminders", remindersHandler);
 
         this.bot.callbackQuery("settings:timezone", settingsTimezone);
 
-        this.bot.callbackQuery("reminders", remindersHandler);
+        this.bot.command("add_reminder", addReminderHandler);
+        this.bot.callbackQuery("add_reminder", addReminderHandler);
     }
 
     async start(): Promise<void> {
         this.register_middlewares();
-        this.register_handlers();
+        this.register_handlers_and_conversations();
+        this.register_routers();
 
         await this.bot.start({
-            onStart: async (_) => {
-                console.log("Нахожу напоминания пользователей и загружаю в schedule...")
-                for await (const reminders of this.reminderBotDatabase.getNotCompleteReminders()) {
-                    for (const reminder of reminders) {
-                        scheduleAddJobReminder(scheduleJobs, moment(reminder.reminder_timestamp), this.reminderBotDatabase, this.bot, reminder.user_id, reminder.id);
-                    }
-                }
-
+            onStart: async () => {
                 console.log("Bot started");
+
+                console.log("Нахожу напоминания пользователей и загружаю в schedule...")
+                for await (const reminders of this.reminderBotDatabase.getNotCompleteReminders())
+                    for (const reminder of reminders)
+                        scheduleAddJobReminder(
+                            scheduleJobs,
+                            moment(reminder.reminder_timestamp),
+                            this.reminderBotDatabase,
+                            this.bot,
+                            reminder.user_id,
+                            reminder.id
+                        );
 
                 await this.bot.api.setMyCommands(this.myCommands);
                 await this.bot.api.sendMessage(this.configData.ADMIN_ID, "Бот запущен.");

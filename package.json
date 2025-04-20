@@ -9,14 +9,12 @@
     "build_and_start": "npx tsc && node ./dist/run.js"
   },
   "dependencies": {
-    "@grammyjs/conversations": "^2.0.1",
-    "@grammyjs/menu": "^1.3.0",
+    "@grammyjs/router": "^2.0.0",
     "dotenv": "^16.4.7",
     "grammy": "^1.35.1",
     "moment": "^2.30.1",
     "node-schedule": "^2.1.1",
-    "pg-cursor": "^2.13.1",
-    "schedulejs": "^0.6.3"
+    "pg-cursor": "^2.13.1"
   },
   "devDependencies": {
     "@types/node": "^22.13.14",

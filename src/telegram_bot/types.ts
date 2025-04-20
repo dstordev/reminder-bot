@@ -1,13 +1,24 @@
 import {Bot, Context, SessionFlavor} from "grammy";
 import {ReminderBotDatabase} from "../database/reminder_bot_database";
-import {Conversation, ConversationFlavor} from "@grammyjs/conversations";
+
+const states = {
+    idle: "idle",
+    updateTimezone: "updateTimezone",
+    reminderMessageText: "reminderMessageText",
+    inputReminderDate: "inputReminderDate",
+    inputReminderTime: "inputReminderTime",
+    inputReminderConfirm: "inputReminderConfirm"
+};
 
 interface SessionData {
+    state: string;
+    stateData: {
+        [key: string]: any;
+    };
     reminderBotDatabase: ReminderBotDatabase;
-    bot: Bot<ConversationFlavor<MyContext>>;
+    bot: Bot<MyContext>;
 }
 
 type MyContext = Context & SessionFlavor<SessionData>;
-type MyConversation = Conversation<ConversationFlavor<MyContext>>;
 
-export {SessionData, MyContext, MyConversation};
+export {SessionData, MyContext, states};

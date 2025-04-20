@@ -1,36 +1,30 @@
 import {replyOrEditMessage} from "./custom_methods";
 import {backToMainMenuKb, settingsKb, startKb} from "./keyboard";
 import {settingsText} from "./texts";
-import {CallbackQueryContext, CommandContext} from "grammy";
-import {ConversationFlavor} from "@grammyjs/conversations";
-import {MyContext} from "./types";
+import {MyContext, states} from "./types";
+import {updateTimezoneConversation} from "./conversations/update_timezone_conversation";
+import {reminderAddConversation} from "./conversations/add_reminder_conversation";
 
-type handlerCtx =
-    CommandContext<ConversationFlavor<MyContext>>
-    | CallbackQueryContext<ConversationFlavor<MyContext>>
-    | ConversationFlavor<MyContext>;
-
-
-async function startHandler(ctx: handlerCtx) {
-    await ctx.conversation.exitAll();
+async function startHandler(ctx: MyContext) {
+    ctx.session.state = states.idle;
     await replyOrEditMessage("<b>🗒 Главное меню</b>", {reply_markup: startKb, parse_mode: "HTML"}, ctx)
 }
 
-async function settingsHandler(ctx: handlerCtx) {
-    await ctx.conversation.exitAll();
-    const userData = await ctx.session.reminderBotDatabase.getUser(ctx.from?.id!);
+async function settingsHandler(ctx: MyContext) {
+    ctx.session.state = states.idle;
+    const userData = await ctx.session.reminderBotDatabase.getUser(ctx.from!.id);
     await replyOrEditMessage(settingsText(userData?.timezone), {reply_markup: settingsKb}, ctx);
 }
 
-async function settingsTimezone(ctx: handlerCtx) {
-    await ctx.conversation.enter("updateTimezoneConversation");
+async function settingsTimezone(ctx: MyContext) {
+    await updateTimezoneConversation(ctx);
 }
 
-async function addReminderHandler(ctx: handlerCtx) {
-    await ctx.conversation.enter("reminderAddConversation");
+async function addReminderHandler(ctx: MyContext) {
+    await reminderAddConversation(ctx);
 }
 
-async function remindersHandler(ctx: handlerCtx) {
+async function remindersHandler(ctx: MyContext) {
     await replyOrEditMessage("🗒 Напоминания", {reply_markup: backToMainMenuKb}, ctx);
 }
 
