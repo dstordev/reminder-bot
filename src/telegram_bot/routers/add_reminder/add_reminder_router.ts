@@ -1,11 +1,11 @@
-import {MyContext, states} from "../types";
+import {MyContext, states} from "../../types";
 import {Router} from "@grammyjs/router";
-import {replyOrEditMessage} from "../custom_methods";
+import {replyOrEditMessage} from "../../custom_methods";
 import moment from "moment/moment";
-import {UTCOffsetToNumber} from "../../utc_offset";
-import {getReminderText} from "../texts";
-import {scheduleAddJobReminder} from "../schedule_reminders";
-import {scheduleJobs} from "../../schedule_funcs";
+import {UTCOffsetToNumber} from "../../../utc_offset";
+import {getReminderText} from "../../texts";
+import {scheduleAddJobReminder} from "../../schedule_reminders";
+import {scheduleJobs} from "../../../schedule_funcs";
 import {input_reminder_confirm, input_reminder_date, input_reminder_time} from "./add_reminder_inputs";
 
 export const addReminderRouter = new Router<MyContext>((ctx) => ctx.session.state);

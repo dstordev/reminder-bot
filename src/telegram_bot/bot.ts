@@ -6,8 +6,8 @@ import moment from "moment";
 import {ConfigModel} from "../config_dotenv";
 import {scheduleAddJobReminder} from "./schedule_reminders";
 import {scheduleJobs} from "../schedule_funcs";
-import {updateTimezoneRouter} from "./routers/update_timezone_router";
-import {addReminderRouter} from "./routers/add_reminder_router";
+import {updateTimezoneRouter} from "./routers/update_timezone/update_timezone_router";
+import {addReminderRouter} from "./routers/add_reminder/add_reminder_router";
 
 export class TelegramBot {
     private readonly bot: Bot<MyContext>;

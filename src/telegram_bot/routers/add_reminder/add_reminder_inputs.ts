@@ -1,9 +1,9 @@
-import {replyOrEditMessage} from "../custom_methods";
-import {backToMainMenuKb, confirmAddReminderKb, selectDateKb, selectUTCTimeKb} from "../keyboard";
-import {MyContext, states} from "../types";
-import {getReminderText} from "../texts";
+import {replyOrEditMessage} from "../../custom_methods";
+import {backToMainMenuKb, confirmAddReminderKb, selectDateKb, selectUTCTimeKb} from "../../keyboard";
+import {MyContext, states} from "../../types";
+import {getReminderText} from "../../texts";
 import {Moment} from "moment";
-import {UsersTableModel} from "../../database/models/tables";
+import {UsersTableModel} from "../../../database/models/tables";
 
 
 async function input_reminder_text(ctx: MyContext) {

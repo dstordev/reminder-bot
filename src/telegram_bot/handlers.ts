@@ -2,8 +2,8 @@ import {replyOrEditMessage} from "./custom_methods";
 import {backToMainMenuKb, settingsKb, startKb} from "./keyboard";
 import {settingsText} from "./texts";
 import {MyContext, states} from "./types";
-import {input_reminder_text} from "./routers/add_reminder_inputs";
-import {input_timezone} from "./routers/update_timezone_inputs";
+import {input_reminder_text} from "./routers/add_reminder/add_reminder_inputs";
+import {input_timezone} from "./routers/update_timezone/update_timezone_inputs";
 
 async function startHandler(ctx: MyContext) {
     ctx.session.state = states.idle;

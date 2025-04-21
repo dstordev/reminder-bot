@@ -1,10 +1,10 @@
-import {MyContext, states} from "../types";
+import {MyContext, states} from "../../types";
 import moment from "moment";
-import {UTCOffsetToNumber} from "../../utc_offset";
-import {scheduleAddJobReminder} from "../schedule_reminders";
-import {scheduleJobs} from "../../schedule_funcs";
+import {UTCOffsetToNumber} from "../../../utc_offset";
+import {scheduleAddJobReminder} from "../../schedule_reminders";
+import {scheduleJobs} from "../../../schedule_funcs";
 import {Router} from "@grammyjs/router";
-import {settingsHandler} from "../handlers";
+import {settingsHandler} from "../../handlers";
 
 export const updateTimezoneRouter = new Router<MyContext>((ctx) => ctx.session.state);
 const updateTimezoneRoute = updateTimezoneRouter.route(states.updateTimezone);

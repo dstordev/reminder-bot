@@ -1,6 +1,6 @@
-import {replyOrEditMessage} from "../custom_methods";
-import {selectTimezoneKb} from "../keyboard";
-import {MyContext, states} from "../types";
+import {replyOrEditMessage} from "../../custom_methods";
+import {selectTimezoneKb} from "../../keyboard";
+import {MyContext, states} from "../../types";
 
 async function input_timezone(ctx: MyContext) {
     const from_user_id: number = ctx.from!.id;
