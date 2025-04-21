@@ -52,6 +52,9 @@ function selectDateKb() {
         .text("Через 1 день", `selectDate:2:days`)
         .text("Через 2 дня", `selectDate:3:days`)
         .row()
+        .text("Через 3 дня", `selectDate:3:days`)
+        .text("Через 4 дня", `selectDate:4:days`)
+        .row()
         .text("◀️ Главное меню", "start");
 }
 
