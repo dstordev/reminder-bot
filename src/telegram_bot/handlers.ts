@@ -2,7 +2,7 @@ import {replyOrEditMessage} from "./custom_methods";
 import {backToMainMenuKb, selectTimezoneKb, settingsKb, startKb} from "./keyboard";
 import {settingsText} from "./texts";
 import {MyContext, states} from "./types";
-import {reminderAddConversation} from "./conversations/add_reminder_conversation";
+import {reminderAddConversation} from "./routers/add_reminder_router";
 
 async function startHandler(ctx: MyContext) {
     ctx.session.state = states.idle;
