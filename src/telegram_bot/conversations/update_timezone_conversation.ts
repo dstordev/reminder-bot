@@ -11,6 +11,17 @@ import {settingsHandler} from "../handlers";
 export const updateTimezoneRouter = new Router<MyContext>((ctx) => ctx.session.state);
 const updateTimezoneRoute = updateTimezoneRouter.route(states.updateTimezone);
 
+async function updateTimezoneConversation(ctx: MyContext) {
+    const from_user_id: number = ctx.from!.id;
+    const userData = await ctx.session.reminderBotDatabase.getUser(from_user_id);
+    const currentTimezone = userData!.timezone;
+
+    await replyOrEditMessage("<b>📝 Выберите свою временную зону:</b>", {reply_markup: selectTimezoneKb(currentTimezone)}, ctx);
+
+    // Смена состояния
+    ctx.session.state = states.updateTimezone;
+}
+
 updateTimezoneRoute.callbackQuery(/settings:timezone:(UTC[+-]\d{2}:\d{2})/, async (ctx) => {
     const from_user_id = ctx.from.id;
 
@@ -56,16 +67,5 @@ updateTimezoneRoute.callbackQuery(/settings:timezone:(UTC[+-]\d{2}:\d{2})/, asyn
     await ctx.answerCallbackQuery("✅ Сохранено");
     await settingsHandler(ctx);
 })
-
-async function updateTimezoneConversation(ctx: MyContext) {
-    const from_user_id: number = ctx.from!.id;
-    const userData = await ctx.session.reminderBotDatabase.getUser(from_user_id);
-    const currentTimezone = userData!.timezone;
-
-    await replyOrEditMessage("<b>📝 Выберите свою временную зону:</b>", {reply_markup: selectTimezoneKb(currentTimezone)}, ctx);
-
-    // Смена состояния
-    ctx.session.state = states.updateTimezone;
-}
 
 export {updateTimezoneConversation};
