@@ -1,7 +1,7 @@
 import {MyContext, states} from "../types";
 import {Router} from "@grammyjs/router";
 import {replyOrEditMessage} from "../custom_methods";
-import {backToMainMenuKb, confirmAddReminderKb, selectDateKb, selectUTCTimeKb} from "../keyboard";
+import {confirmAddReminderKb, selectDateKb, selectUTCTimeKb} from "../keyboard";
 import moment from "moment/moment";
 import {UTCOffsetToNumber} from "../../utc_offset";
 import {getReminderText} from "../texts";
@@ -10,13 +10,6 @@ import {scheduleJobs} from "../../schedule_funcs";
 
 export const addReminderRouter = new Router<MyContext>((ctx) => ctx.session.state);
 
-export async function reminderAddConversation(ctx: MyContext) {
-    await replyOrEditMessage("<b>📝 Введите текст напоминания:</b>", {
-        reply_markup: backToMainMenuKb,
-        parse_mode: "HTML"
-    }, ctx);
-    ctx.session.state = states.reminderMessageText;
-}
 
 const reminderMessageTextRoute = addReminderRouter.route(states.reminderMessageText);
 reminderMessageTextRoute.on("message:text", async (ctx) => {

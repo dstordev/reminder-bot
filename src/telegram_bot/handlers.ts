@@ -2,7 +2,6 @@ import {replyOrEditMessage} from "./custom_methods";
 import {backToMainMenuKb, selectTimezoneKb, settingsKb, startKb} from "./keyboard";
 import {settingsText} from "./texts";
 import {MyContext, states} from "./types";
-import {reminderAddConversation} from "./routers/add_reminder_router";
 
 async function startHandler(ctx: MyContext) {
     ctx.session.state = states.idle;
@@ -31,7 +30,11 @@ async function settingsTimezone(ctx: MyContext) {
 }
 
 async function addReminderHandler(ctx: MyContext) {
-    await reminderAddConversation(ctx);
+    await replyOrEditMessage("<b>📝 Введите текст напоминания:</b>", {
+        reply_markup: backToMainMenuKb,
+        parse_mode: "HTML"
+    }, ctx);
+    ctx.session.state = states.reminderMessageText;
 }
 
 async function remindersHandler(ctx: MyContext) {
