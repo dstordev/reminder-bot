@@ -1,26 +1,19 @@
 import {MyContext, states} from "../types";
 import {Router} from "@grammyjs/router";
 import {replyOrEditMessage} from "../custom_methods";
-import {confirmAddReminderKb, selectDateKb, selectUTCTimeKb} from "../keyboard";
 import moment from "moment/moment";
 import {UTCOffsetToNumber} from "../../utc_offset";
 import {getReminderText} from "../texts";
 import {scheduleAddJobReminder} from "../schedule_reminders";
 import {scheduleJobs} from "../../schedule_funcs";
+import {input_reminder_confirm, input_reminder_date, input_reminder_time} from "./add_reminder_inputs";
 
 export const addReminderRouter = new Router<MyContext>((ctx) => ctx.session.state);
-
 
 const reminderMessageTextRoute = addReminderRouter.route(states.reminderMessageText);
 reminderMessageTextRoute.on("message:text", async (ctx) => {
     ctx.session.stateData.reminderMessageText = ctx.message.text;
-
-    // Ждем ввод даты
-    await replyOrEditMessage("<b>📝 Выберите вариант снизу или введите дату напоминания в формате <code>дд.мм.гггг</code>:</b>", {
-        reply_markup: selectDateKb(),
-        parse_mode: "HTML"
-    }, ctx)
-    ctx.session.state = states.inputReminderDate;
+    await input_reminder_date(ctx);
 });
 
 const inputReminderDateRoute = addReminderRouter.route(states.inputReminderDate);
@@ -78,11 +71,7 @@ inputReminderDateRoute.on(["message:text", "callback_query:data"], async (ctx) =
 
     ctx.session.stateData.reminderDate = reminderDate;
 
-    await replyOrEditMessage("<b>📝 Введите время напоминания в формате <code>чч:мм</code> (24-hour):</b>", {
-        reply_markup: selectUTCTimeKb(),
-        parse_mode: "HTML"
-    }, ctx)
-    ctx.session.state = states.inputReminderTime;
+    await input_reminder_time(ctx);
 })
 
 const inputReminderTimeRoute = addReminderRouter.route(states.inputReminderTime);
@@ -128,13 +117,7 @@ inputReminderTimeRoute.on(["message:text", "callback_query:data"], async (ctx) =
     }).utcOffset(UTCOffsetToNumber(userData!.timezone!));
     ctx.session.stateData.reminderDateTime = reminderDateTime;
 
-    await replyOrEditMessage(
-        getReminderText(reminderDateTime, ctx.session.stateData.reminderMessageText, userData?.timezone!),
-        {parse_mode: "HTML", reply_markup: confirmAddReminderKb},
-        ctx
-    );
-
-    ctx.session.state = states.inputReminderConfirm;
+    await input_reminder_confirm(ctx, reminderDateTime, userData!);
 })
 
 const inputReminderConfirmRoute = addReminderRouter.route(states.inputReminderConfirm);
