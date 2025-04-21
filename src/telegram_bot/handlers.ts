@@ -1,8 +1,7 @@
 import {replyOrEditMessage} from "./custom_methods";
-import {backToMainMenuKb, settingsKb, startKb} from "./keyboard";
+import {backToMainMenuKb, selectTimezoneKb, settingsKb, startKb} from "./keyboard";
 import {settingsText} from "./texts";
 import {MyContext, states} from "./types";
-import {updateTimezoneConversation} from "./conversations/update_timezone_conversation";
 import {reminderAddConversation} from "./conversations/add_reminder_conversation";
 
 async function startHandler(ctx: MyContext) {
@@ -17,7 +16,18 @@ async function settingsHandler(ctx: MyContext) {
 }
 
 async function settingsTimezone(ctx: MyContext) {
-    await updateTimezoneConversation(ctx);
+    const from_user_id: number = ctx.from!.id;
+    const userData = await ctx.session.reminderBotDatabase.getUser(from_user_id);
+    const currentTimezone = userData!.timezone;
+
+    await replyOrEditMessage(
+        "<b>📝 Выберите свою временную зону:</b>",
+        {reply_markup: selectTimezoneKb(currentTimezone)},
+        ctx
+    );
+
+    // Смена состояния
+    ctx.session.state = states.updateTimezone;
 }
 
 async function addReminderHandler(ctx: MyContext) {
