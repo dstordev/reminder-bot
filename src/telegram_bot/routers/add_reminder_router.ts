@@ -29,10 +29,10 @@ inputReminderDateRoute.on(["message:text", "callback_query:data"], async (ctx) =
         const unit = selectTimeAddParams[2];
 
         if (unit === "days") {
-            const momentPlus1Min = moment().add(amount, unit);
-            year = momentPlus1Min.year();
-            month = momentPlus1Min.month();
-            day = momentPlus1Min.date();
+            const momentPlusAmount = moment().add(amount, unit);
+            year = momentPlusAmount.year();
+            month = momentPlusAmount.month();
+            day = momentPlusAmount.date();
         } else {
             throw Error("Unit не равняется `days` или `seconds`");
         }
@@ -87,10 +87,10 @@ inputReminderTimeRoute.on(["message:text", "callback_query:data"], async (ctx) =
         const unit = selectTimeAddParams[2];
 
         if (unit === "minutes" || unit === "seconds") {
-            const momentPlus1Min = moment().add(amount, unit);
-            hours = momentPlus1Min.hours();
-            minutes = momentPlus1Min.minutes();
-            seconds = momentPlus1Min.seconds();
+            const momentPlusAmount = moment().add(amount, unit);
+            hours = momentPlusAmount.hours();
+            minutes = momentPlusAmount.minutes();
+            seconds = momentPlusAmount.seconds();
         } else {
             throw Error("Unit не равняется `minutes` или `seconds`");
         }
