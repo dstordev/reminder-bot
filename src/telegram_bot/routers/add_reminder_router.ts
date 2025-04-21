@@ -132,23 +132,24 @@ inputReminderConfirmRoute.callbackQuery(/addReminder:(\w{2,3})/, async (ctx) => 
         reminderConfirm = true;
     else
         throw new Error();
-
-    // Создаем напоминание в БД
-    const reminder_id = await ctx.session.reminderBotDatabase.addUserReminder(
-        from_user_id,
-        ctx.session.stateData.reminderMessageText,
-        ctx.session.stateData.reminderDateTime,
-        moment()
-    );
-    // Регистрируем напоминание
-    scheduleAddJobReminder(
-        scheduleJobs,
-        ctx.session.stateData.reminderDateTime,
-        ctx.session.reminderBotDatabase,
-        ctx.session.bot,
-        from_user_id,
-        reminder_id
-    );
+    if (reminderConfirm) {
+        // Создаем напоминание в БД
+        const reminder_id = await ctx.session.reminderBotDatabase.addUserReminder(
+            from_user_id,
+            ctx.session.stateData.reminderMessageText,
+            ctx.session.stateData.reminderDateTime,
+            moment()
+        );
+        // Регистрируем напоминание
+        scheduleAddJobReminder(
+            scheduleJobs,
+            ctx.session.stateData.reminderDateTime,
+            ctx.session.reminderBotDatabase,
+            ctx.session.bot,
+            from_user_id,
+            reminder_id
+        );
+    }
 
     await replyOrEditMessage(
         getReminderText(
