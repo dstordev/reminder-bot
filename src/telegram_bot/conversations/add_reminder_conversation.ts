@@ -135,10 +135,11 @@ inputReminderTimeRoute.on(["message:text", "callback_query:data"], async (ctx) =
     }).utcOffset(UTCOffsetToNumber(userData!.timezone!));
     ctx.session.stateData.reminderDateTime = reminderDateTime;
 
-    await replyOrEditMessage(getReminderText(reminderDateTime, ctx.session.stateData.reminderMessageText, userData?.timezone!), {
-        parse_mode: "HTML",
-        reply_markup: confirmAddReminderKb
-    }, ctx);
+    await replyOrEditMessage(
+        getReminderText(reminderDateTime, ctx.session.stateData.reminderMessageText, userData?.timezone!),
+        {parse_mode: "HTML", reply_markup: confirmAddReminderKb},
+        ctx
+    );
 
     ctx.session.state = states.inputReminderConfirm;
 })
@@ -174,7 +175,12 @@ inputReminderConfirmRoute.callbackQuery(/addReminder:(\w{2,3})/, async (ctx) => 
     );
 
     await replyOrEditMessage(
-        getReminderText(ctx.session.stateData.reminderDateTime, ctx.session.stateData.reminderMessageText, userData?.timezone!, reminderConfirm),
+        getReminderText(
+            ctx.session.stateData.reminderDateTime,
+            ctx.session.stateData.reminderMessageText,
+            userData?.timezone!,
+            reminderConfirm
+        ),
         {parse_mode: "HTML"},
         ctx
     );

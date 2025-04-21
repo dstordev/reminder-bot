@@ -17,7 +17,6 @@ updateTimezoneRoute.callbackQuery(/settings:timezone:(UTC[+-]\d{2}:\d{2})/, asyn
     const userData = await ctx.session.reminderBotDatabase.getUser(from_user_id);
     const currentTimezone = userData!.timezone;
 
-    // const callbackSelectedTimezone = await conversation.waitForCallbackQuery(/settings:timezone:(UTC[+-]\d{2}:\d{2})/);
     const selectedTimezone = ctx.callbackQuery.data.split("settings:timezone:")[1];
     await ctx.session.reminderBotDatabase.updateUser(from_user_id, {
         first_name: ctx.from?.first_name!,
@@ -43,7 +42,14 @@ updateTimezoneRoute.callbackQuery(/settings:timezone:(UTC[+-]\d{2}:\d{2})/, asyn
 
             await ctx.session.reminderBotDatabase.updateReminderTimestamp(reminder.id, new_timestamp);
 
-            scheduleAddJobReminder(scheduleJobs, new_timestamp, ctx.session.reminderBotDatabase, ctx.session.bot, reminder.user_id, reminder.id);
+            scheduleAddJobReminder(
+                scheduleJobs,
+                new_timestamp,
+                ctx.session.reminderBotDatabase,
+                ctx.session.bot,
+                reminder.user_id,
+                reminder.id
+            );
         }
     }
 
