@@ -39,7 +39,8 @@ inputReminderDateRoute.on(["message:text", "callback_query:data"], async (ctx) =
     } else if (ctx.message) {
         parsedDate = ctx.message!.text.match(regMatcher);
         if (!parsedDate) {
-            await ctx.reply("<b>🤚 Введеная вами дата не соответствует заданому формату...</b>", {parse_mode: "HTML"});
+            await ctx.reply("🤚 Введеная вами дата не соответствует заданному формату...");
+            await input_reminder_date(ctx);
             return;
         }
         year = parseInt(parsedDate![3]);
@@ -57,7 +58,8 @@ inputReminderDateRoute.on(["message:text", "callback_query:data"], async (ctx) =
 
     const nowDateTime = moment();
     if (reminderDate.isBefore(nowDateTime, "day")) {
-        await ctx.reply("<b>🤚 Введеная вами дата меньше текущей...</b>", {parse_mode: "HTML"});
+        await ctx.reply("🤚 Введеная вами дата меньше текущей...");
+        await input_reminder_date(ctx);
         return;
     }
 
@@ -65,7 +67,8 @@ inputReminderDateRoute.on(["message:text", "callback_query:data"], async (ctx) =
     const daysDifference = Math.floor(diffTime / 1000 / 60 / 60 / 24);
 
     if (daysDifference > 60) {
-        await ctx.reply("<b>🤚 Вы не можете добавить напоминание больше чем на 60 дней вперед...</b>", {parse_mode: "HTML"})
+        await ctx.reply("🤚 Вы не можете добавить напоминание больше чем на 60 дней вперед...")
+        await input_reminder_date(ctx);
         return;
     }
 
@@ -99,7 +102,8 @@ inputReminderTimeRoute.on(["message:text", "callback_query:data"], async (ctx) =
     else {
         let enteredTimeWithTimezone = ctx.message.text.match(/(\d{2}):(\d{2})/);
         if (!enteredTimeWithTimezone) {
-            await ctx.reply("<b>🤚 Введеное вами время не соответствует заданому формату...</b>", {parse_mode: "HTML"});
+            await ctx.reply("🤚 Введеное вами время не соответствует заданному формату...");
+            await input_reminder_time(ctx);
             return;
         }
         hours = parseInt(enteredTimeWithTimezone[1]);
@@ -115,6 +119,18 @@ inputReminderTimeRoute.on(["message:text", "callback_query:data"], async (ctx) =
         minutes: minutes,
         seconds: seconds
     }).utcOffset(UTCOffsetToNumber(userData!.timezone!));
+    if (isNaN(reminderDateTime.day())) {
+        await ctx.reply("🤚 Введеная вами дата не соответствует заданному формату...");
+        await input_reminder_time(ctx);
+        return;
+    }
+    const nowDateTime = moment();
+    if (reminderDateTime.isBefore(nowDateTime, "hours")) {
+        await ctx.reply("🤚 Введеная вами дата меньше текущей...");
+        await input_reminder_time(ctx);
+        return;
+    }
+
     ctx.session.stateData.reminderDateTime = reminderDateTime;
 
     await input_reminder_confirm(ctx, reminderDateTime, userData!);

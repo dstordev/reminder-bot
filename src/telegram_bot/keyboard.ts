@@ -50,7 +50,9 @@ function selectDateKb() {
         .text("Завтра", `selectDate:1:days`)
         .row()
         .text("Через 1 день", `selectDate:2:days`)
-        .text("Через 2 дня", `selectDate:3:days`);
+        .text("Через 2 дня", `selectDate:3:days`)
+        .row()
+        .text("◀️ Главное меню", "start");
 }
 
 function selectUTCTimeKb() {
@@ -66,7 +68,9 @@ function selectUTCTimeKb() {
         .text("Через 1 час", "selectTimeAdd:60:minutes")
         .row()
         .text("Через 2 часа", "selectTimeAdd:60:minutes")
-        .text("Через 3 часа", "selectTimeAdd:60:minutes");
+        .text("Через 3 часа", "selectTimeAdd:60:minutes")
+        .row()
+        .text("◀️ Главное меню", "start");
 }
 
 export {
